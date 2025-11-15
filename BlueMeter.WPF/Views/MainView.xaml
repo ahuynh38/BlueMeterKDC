@@ -365,13 +365,31 @@
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <ctrl:Header Title="{Binding DataContext.AppConfig.ThemeColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ThemeToAppNameConverter}}" Grid.Row="0" />
 
-            <Border Grid.Row="1" Style="{StaticResource MainContentBorder}">
+                <!-- Update Available Banner -->
+                <Border Grid.Row="1"
+                        Background="#FFA500"
+                        Padding="10,5"
+                        Cursor="Hand"
+                        Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border.InputBindings>
+                        <MouseBinding MouseAction="LeftClick" Command="{Binding OpenReleaseUrlCommand}" />
+                    </Border.InputBindings>
+                    <TextBlock
+                        Text="{Binding LatestVersion, StringFormat='New Update available v{0} - Click to download'}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+                </Border>
+
+            <Border Grid.Row="2" Style="{StaticResource MainContentBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="350" />

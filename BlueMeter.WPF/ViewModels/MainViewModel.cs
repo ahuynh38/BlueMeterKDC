@@ -24,9 +24,19 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     private readonly IMessageDialogService _dialogService;
     private readonly IConfigManager _configManager;
     private readonly ThemeService _themeService;
+    private readonly IUpdateChecker _updateChecker;
     private readonly ObservableCollection<PluginListItemViewModel> _plugins = [];
     private PluginListItemViewModel? _lastSelectedPlugin;
     private IPluginManager _pluginManager;
+
+    [ObservableProperty]
+    private bool _isUpdateAvailable;
+
+    [ObservableProperty]
+    private string? _latestVersion;
+
+    [ObservableProperty]
+    private string? _releaseUrl;
 
     public MainViewModel(
         ApplicationThemeManager themeManager,
@@ -39,6 +49,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
         IMessageDialogService dialogService,
         IConfigManager configManager,
         ThemeService themeService,
+        IUpdateChecker updateChecker,
         ViewModels.Checklist.ChecklistViewModel checklistViewModel)
     {
         _themeManager = themeManager;
@@ -49,8 +60,12 @@ public partial class MainViewModel : BaseViewModel, IDisposable
         _dialogService = dialogService;
         _configManager = configManager;
         _themeService = themeService;
+        _updateChecker = updateChecker;
         _pluginManager = pluginManager;
         ChecklistViewModel = checklistViewModel;
+
+        // Check for updates on startup (async, don't await)
+        _ = CheckForUpdatesAsync();
 
         Debug = debugFunctions;
         AvailableThemes = [ApplicationTheme.Light, ApplicationTheme.Dark];
@@ -328,6 +343,44 @@ public partial class MainViewModel : BaseViewModel, IDisposable
         if (result == true)
         {
             _appControlService.Shutdown();
+        }
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var updateInfo = await _updateChecker.CheckForUpdatesAsync();
+            if (updateInfo != null)
+            {
+                IsUpdateAvailable = updateInfo.IsUpdateAvailable;
+                LatestVersion = updateInfo.LatestVersion;
+                ReleaseUrl = updateInfo.ReleaseUrl;
+            }
+        }
+        catch
+        {
+            // Silently fail - update check is not critical
+        }
+    }
+
+    [RelayCommand]
+    private void OpenReleaseUrl()
+    {
+        if (!string.IsNullOrEmpty(ReleaseUrl))
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = ReleaseUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch
+            {
+                // Silently fail
+            }
         }
     }
 
