@@ -80,10 +80,17 @@ public partial class App : Application
 
     private static IConfiguration BuildConfiguration()
     {
+        // User config path in AppData (persists across updates)
+        var appDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "BlueMeter");
+        var userConfigPath = Path.Combine(appDataPath, "config.json");
+
         return new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile("appsettings.json", false, true)  // Default settings
             .AddJsonFile("appsettings.Development.json", true, true)
+            .AddJsonFile(userConfigPath, optional: true, reloadOnChange: true)  // User settings (override defaults)
             .Build();
     }
 

@@ -16,7 +16,13 @@ public class ConfigManger : IConfigManager
     {
         _optionsMonitor = optionsMonitor;
         _jsonOptions = jsonOptions.Value;
-        _configFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+
+        // Save user settings to AppData to persist across updates
+        var appDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "BlueMeter");
+        Directory.CreateDirectory(appDataPath);
+        _configFilePath = Path.Combine(appDataPath, "config.json");
 
         // Subscribe to configuration changes
         _optionsMonitor.OnChange(OnConfigurationChanged);
@@ -32,17 +38,16 @@ public class ConfigManger : IConfigManager
     {
         try
         {
-            // Read the current appsettings.json
-            var jsonContent = await File.ReadAllTextAsync(_configFilePath);
-            // var jsonDoc = JsonDocument.Parse(jsonContent);
-            var rootDict = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent, _jsonOptions) ??
-                           new Dictionary<string, object>();
-
-            // Update the Config section
             newConfig ??= CurrentConfig;
-            rootDict["Config"] = newConfig;
 
-            // Write back to file using the configured options
+            // Save only the Config section to AppData
+            // This file will overlay the default appsettings.json
+            var rootDict = new Dictionary<string, object>
+            {
+                ["Config"] = newConfig
+            };
+
+            // Write to AppData config file
             var updatedJson = JsonSerializer.Serialize(rootDict, _jsonOptions);
             await File.WriteAllTextAsync(_configFilePath, updatedJson);
 
