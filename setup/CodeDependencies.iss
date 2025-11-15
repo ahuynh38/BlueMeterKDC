@@ -780,7 +780,7 @@ begin
   // Npcap is required for packet capturing with SharpPcap
   if not RegKeyExists(HKLM, 'SOFTWARE\Npcap') then begin
     Dependency_Add('npcap-1.79.exe',
-      '/S',
+      '/winpcap_mode=yes /loopback_support=no /admin_only=no /S',
       'Npcap (Packet Capture Driver)',
       'https://npcap.com/dist/npcap-1.79.exe',
       '', True, False);
