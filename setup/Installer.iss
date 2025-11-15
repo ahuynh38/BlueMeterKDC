@@ -11,7 +11,7 @@
 #include "CodeDependencies.iss"
 
 #define MyAppName "BlueMeter"
-#define MyAppVersion "1.3.4"
+#define MyAppVersion "1.3.5"
 #define MyAppURL "https://github.com/caaatto/BlueMeter"
 #define MyAppExeName "BlueMeter.WPF.exe"
 
@@ -64,6 +64,55 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[UninstallDelete]
+Type: files; Name: "{app}\PlayerInfoCache.dat"
+Type: files; Name: "{app}\*.log"
+Type: dirifempty; Name: "{app}"
+
+[Code]
+var
+  DeleteUserDataPage: TInputOptionWizardPage;
+
+procedure InitializeUninstallProgressForm();
+begin
+  DeleteUserDataPage := CreateInputOptionPage(wpWelcome,
+    'Remove User Data', 'Do you want to remove all BlueMeter user data?',
+    'BlueMeter stores your settings, combat logs, and checklists in your user folder. ' +
+    'Do you want to remove this data as well?' + #13#10 + #13#10 +
+    'Location: ' + ExpandConstant('{localappdata}\BlueMeter'),
+    False, False);
+  DeleteUserDataPage.Add('Remove all user data (settings, combat logs, checklists)');
+  DeleteUserDataPage.Add('Keep user data (you can manually delete it later)');
+  DeleteUserDataPage.SelectedValueIndex := 1; // Default to keeping data
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  AppDataPath: String;
+begin
+  if CurUninstallStep = usPostUninstall then
+  begin
+    // If user chose to delete user data
+    if DeleteUserDataPage.SelectedValueIndex = 0 then
+    begin
+      AppDataPath := ExpandConstant('{localappdata}\BlueMeter');
+      if DirExists(AppDataPath) then
+      begin
+        if MsgBox('Are you sure you want to permanently delete all BlueMeter data?' + #13#10 + #13#10 +
+                  'This will remove:' + #13#10 +
+                  '- Your settings and configuration' + #13#10 +
+                  '- All combat logs and statistics' + #13#10 +
+                  '- Checklist data' + #13#10 + #13#10 +
+                  'This action cannot be undone!',
+                  mbConfirmation, MB_YESNO) = IDYES then
+        begin
+          DelTree(AppDataPath, True, True, True);
+        end;
+      end;
+    end;
+  end;
+end;
 
 [Code]
 function InitializeSetup: Boolean;
