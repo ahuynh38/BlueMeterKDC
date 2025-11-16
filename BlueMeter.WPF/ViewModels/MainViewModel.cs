@@ -339,6 +339,14 @@ public partial class MainViewModel : BaseViewModel, IDisposable
         var title = _localizationManager.GetString(ResourcesKeys.App_Exit_Confirm_Title);
         var content = _localizationManager.GetString(ResourcesKeys.App_Exit_Confirm_Content);
 
+        // Checking if localization failed
+        if (title == nameof(ResourcesKeys.App_Exit_Confirm_Title) || content == nameof(ResourcesKeys.App_Exit_Confirm_Content))
+        {
+            // Fallback to hardcoded English strings
+            title = "Confirm Exit";
+            content = "Are you sure you want to close the application?";
+        }
+
         var result = _dialogService.Show(title, content);
         if (result == true)
         {
