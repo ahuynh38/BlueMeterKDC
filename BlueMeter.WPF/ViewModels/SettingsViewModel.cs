@@ -229,12 +229,6 @@ public partial class SettingsViewModel(
             
             double opacityValue = config.Opacity / 100.0;
 
-            // Apply to DPS statistics window
-            // foreach (Window win in Application.Current.Windows)
-            // {
-            //     if (win == Application.Current.MainWindow) continue;
-            //     win.Opacity = opacityValue;
-            // }
             var dps = Application.Current.Windows.OfType<BlueMeter.WPF.Views.DpsStatisticsView>().FirstOrDefault();
             if (dps != null)
             {
