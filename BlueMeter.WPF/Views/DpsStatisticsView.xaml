@@ -509,7 +509,17 @@
                                 <ContextMenu Style="{StaticResource ModernContextMenu}">
                                     <!--  只给 MenuItem 应用样式，Separator 不受影响  -->
                                     <ContextMenu.Resources>
-                                        <Style BasedOn="{StaticResource DpsSettingsMenuItem}" TargetType="{x:Type MenuItem}" />
+                                        <!-- base style for all MenuItems in this ContextMenu -->
+                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DpsSettingsMenuItem}">
+                                            <!-- Bind via PlacementTarget so we can reach the Window DataContext -->
+                                            <Setter Property="Foreground" Value="#000000" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                        </Style>
+
+                                        <!-- optional: different style for checkable items if needed -->
+                                        <Style TargetType="{x:Type MenuItem}" x:Key="DpsCheckableMenuItemLocal" BasedOn="{StaticResource DpsCheckableMenuItem}">
+                                            <Setter Property="Foreground" Value="#000000" />
+                                        </Style>
                                     </ContextMenu.Resources>
                                     <MenuItem
                                         Command="{Binding OpenSettingsCommand}"
