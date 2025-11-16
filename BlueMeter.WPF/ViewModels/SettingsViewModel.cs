@@ -201,7 +201,8 @@ public partial class SettingsViewModel(
         }
 
     }
-
+    
+    private readonly IWindowManagementService _windowManagement;
     private void OnAppConfigPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not AppConfig config)
@@ -220,6 +221,24 @@ public partial class SettingsViewModel(
             if (adapter != null)
             {
                 deviceManagementService.SetActiveNetworkAdapter(adapter);
+            }
+        }
+
+        else if (e.PropertyName == nameof(AppConfig.Opacity))
+        {
+            
+            double opacityValue = config.Opacity / 100.0;
+
+            // Apply to DPS statistics window
+            // foreach (Window win in Application.Current.Windows)
+            // {
+            //     if (win == Application.Current.MainWindow) continue;
+            //     win.Opacity = opacityValue;
+            // }
+            var dps = Application.Current.Windows.OfType<BlueMeter.WPF.Views.DpsStatisticsView>().FirstOrDefault();
+            if (dps != null)
+            {
+                dps.Opacity = opacityValue;
             }
         }
 
