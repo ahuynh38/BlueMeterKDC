@@ -2,7 +2,9 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.0.txt)
 
-This project is based on [StarResonanceDps](https://github.com/anying1073/StarResonanceDps), which implements the network packet capture technique originally developed by [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter). Many thanks to both authors for their contributions.
+This project is a fork of BlueMeter (https://github.com/caaatto/BlueMeter) with some code changes that are personalized for myself and my guildmates. We play in English and noticed that many of our skill names were wrong, some settings were invisible in the menus, and the opacity setting wasn't working. I wanted to try to resolve some of these issues, but without knowledge of the underlying causes of them, I wasn't sure if I should push my changes to the main branch of the original project. So, I'll store my changes here! The rest of this readme is copy+pasted directly from the original project.
+
+The original project is based on [StarResonanceDps](https://github.com/anying1073/StarResonanceDps), which implements the network packet capture technique originally developed by [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter). Many thanks to both authors for their contributions.
 
 The tool does not require modifying the game client and does not violate the game's Terms of Service. It is intended to help players better understand combat data, avoid ineffective optimizations, and improve overall gameplay. Please do not use the results to justify power-level discrimination or any behavior that harms the community.
 
